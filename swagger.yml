@@ -1,0 +1,176 @@
+openapi: 3.0.0 # The OpenAPI version defines the overall structure of an API definition – what we can document and how we can document it.
+info: # contains the info section of the API specification: title, description (optional), and version
+  #description (optional), and version .
+  #title is the API name.
+  #version is an arbitrary string that specifies the version of the API.
+  title: "Audit system"
+  description: "An audit system API"
+  version: "1.0.0"
+servers:
+  - url: "http://localhost:8000/api" # contains the servers section, which specifies the API server and base URL. All API paths are relative to this server URL.
+paths: # contains the paths section where we defined individual endpoints (paths) of our API, and the HTTP methods (operations) supported by these endpoints.
+  #An operation definition includes parameters, request body (if any), possible response status codes (such as 200 OK or 404 Not Found)
+  #and response contents. For more information, see Paths and Operations(https://swagger.io/docs/specification/paths-and-operations/).
+  # Operations can have parameters passed via URL path (/item/{id}), query string (/item?name=chair)
+  /persons:
+    get:
+      summary: "Method to get list of persons"
+      tags:
+        - Persons
+      operationId: "get_all_persons"
+      responses:
+        "200":
+          description: "Successfully read person list"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Persons"
+        "default":
+          description: "All non standard"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    post:
+      summary: "Method to create person"
+      tags:
+        - Persons
+      operationId: createPerson
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Person"
+      responses:
+        "200":
+          description: "Successfully created person"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Person"
+        "default":
+          description: "All non standard"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /persons/{person_id}:
+    get:
+      summary: "Method to get person by ID"
+      tags:
+        - Persons
+      operationId: "get_person_by_id"
+      parameters:
+        - name: person_id
+          in: path
+          required: true
+          description: Person identificator
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Successfully get one person"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Person"
+        "default":
+          description: "All non standard"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    put:
+      summary: "Method to update person by ID"
+      tags:
+        - Persons
+      operationId: "Update_person_by_id"
+      parameters:
+        - name: person_id
+          in: path
+          required: true
+          description: Person identificator
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Successfully updated person"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Person"
+        "default":
+          description: "All non standard"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    delete:
+      summary: "Method to delete person by ID"
+      tags:
+        - Persons
+      operationId: "delete_person_by_id"
+      parameters:
+        - name: person_id
+          in: path
+          required: true
+          description: Person identificator
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Deleted Successfully"
+          content:
+            application/json: {}
+        "default":
+          description: "All non standard"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+
+components: #components/schemas section, which lets us define common data structures used in our API.
+  #They can be referenced via $ref whenever a schema is required – in parameters, request bodies, and response bodies.
+  schemas:
+    Person:
+      type: object
+      required:
+        - fname
+        - lname
+        - personID
+        - status
+      properties:
+        fname:
+          type: "string"
+        lname:
+          type: "string"
+        personID:
+          type: "integer"
+        status:
+          type: "string"
+          enum:
+            - active
+            - inactive
+        created_at:
+          type: string
+          format: 2022-07-01T15:00:00+01
+    Persons:
+      type: array
+      items:
+        $ref: "#/components/schemas/Person"
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
